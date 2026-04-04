@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: oklch(0.6 0.25 250);
+  --color-brand-secondary: oklch(0.7 0.15 320);
+  --color-bg-dark: oklch(0.15 0.05 250);
+  --color-accent: oklch(0.8 0.2 150);
+}
+
+:root {
+  font-family: "Inter", sans-serif;
+  background-color: var(--color-bg-dark);
+  color: white;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Premium Gradients */
+.gradient-bg {
+  background:
+    radial-gradient(
+      circle at top left,
+      var(--color-brand-primary),
+      transparent
+    ),
+    radial-gradient(
+      circle at bottom right,
+      var(--color-brand-secondary),
+      transparent
+    );
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
