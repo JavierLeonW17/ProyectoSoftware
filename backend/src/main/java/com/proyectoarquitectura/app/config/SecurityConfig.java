@@ -3,6 +3,7 @@ package com.proyectoarquitectura.app.config;
 import com.proyectoarquitectura.app.security.JwtAuthenticationFilter;
 import com.proyectoarquitectura.app.security.RestAccessDeniedHandler;
 import com.proyectoarquitectura.app.security.RestAuthEntryPoint;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
@@ -80,10 +82,16 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
-        List<String> origins = Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isBlank())
-                .toList();
+        List<String> origins = allowedOrigins == null ? List.of()
+                : Arrays.stream(allowedOrigins.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isBlank())
+                    .toList();
+
+        log.info("[CORS] origenes permitidos: {}", origins);
+        if (origins.isEmpty()) {
+            log.warn("[CORS] no hay origenes permitidos. Define la variable CORS_ALLOWED_ORIGINS.");
+        }
 
         CorsConfiguration cfg = new CorsConfiguration();
         // setAllowedOriginPatterns soporta wildcards (https://*.vercel.app);
