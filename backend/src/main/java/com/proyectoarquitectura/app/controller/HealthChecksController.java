@@ -34,7 +34,6 @@ public class HealthChecksController {
 
             long time = System.currentTimeMillis() - start;
 
-            // 🔥 validación real
             if (result == null || result != 1) {
                 return ResponseEntity.status(500).body(
                         ApiResponse.<Map<String, Object>>builder()
@@ -46,7 +45,6 @@ public class HealthChecksController {
                 );
             }
 
-            // ⚠️ detección de degradación
             String status = time > 2000 ? "DEGRADED" : "UP";
 
             return ResponseEntity.ok(
