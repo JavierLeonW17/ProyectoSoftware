@@ -3,6 +3,7 @@ package com.proyectoarquitectura.app.config;
 import com.proyectoarquitectura.app.security.JwtAuthenticationFilter;
 import com.proyectoarquitectura.app.security.RestAccessDeniedHandler;
 import com.proyectoarquitectura.app.security.RestAuthEntryPoint;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -28,6 +30,9 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final RestAuthEntryPoint restAuthEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
+
+    @Value("${app.cors.allowed-origins}")
+    private String allowedOrigins;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
                           RestAuthEntryPoint restAuthEntryPoint,
@@ -74,12 +79,21 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
+        List<String> origins = Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .toList();
+
         CorsConfiguration cfg = new CorsConfiguration();
-        cfg.setAllowedOriginPatterns(List.of("*"));
+        // setAllowedOriginPatterns soporta wildcards (https://*.vercel.app);
+        // setAllowedOrigins seria literal y no aceptaria los previews de Vercel.
+        cfg.setAllowedOriginPatterns(origins);
         cfg.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         cfg.setAllowedHeaders(List.of("*"));
         cfg.setExposedHeaders(List.of("Authorization"));
         cfg.setAllowCredentials(true);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", cfg);
         return source;
